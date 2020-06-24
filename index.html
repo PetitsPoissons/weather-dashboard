@@ -12,8 +12,34 @@
     <header class="hero row justify-content-center">
         <h1 class="app-title">Weather Dashboard</h1>
     </header> 
-    <main>
-
+    <main class="container">
+        <div class="row justify-space-between">
+        <!-- Search column -->
+        <div class="col-12 col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Search for a City:</h5>
+                    <form id="user-form">
+                        <div class="input-group mb-3">
+                            <input type="text" name="city-name" id="city-name" class="form-control" aria-describedby="button-addon2"/>
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button" id="button-addon2">Search</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- Results column -->
+        <div class="col-12 col-md-9">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title" id="city-searched"></h3>
+                    <div id="current-weather-container"></div>
+                </div>
+            </div>
+        </div>
+        </div>
     </main>
     <script src="./assets/js/weather.js"></script> 
 </body>
