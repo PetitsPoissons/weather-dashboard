@@ -14,8 +14,8 @@ var isEmpty = function(obj) {
 }
 
 var getCurrentWeather = function(cityName) {
-    // format the OpenWeather api url
-    var apiURL = 'https://api.openweathermap.org/data/2.5/weather?q=' + cityName + '&units=imperial&appid=' + apiKey;
+    // format the OpenWeather api url for current weather, one location
+    var apiURL = `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&units=imperial&appid=${apiKey}`;
 
     // make a request to the url
     fetch(apiURL).then(function(response) {
@@ -33,6 +33,28 @@ var getCurrentWeather = function(cityName) {
     });
 };
 
+var getUVindex = function(lat, lon) {
+    var indexValue;
+    // format the OpenWeather api url for current UV index, one location
+    var apiURL = `http://api.openweathermap.org/data/2.5/uvi?appid=${apiKey}&lat=${lat}&lon=${lon}`;
+    fetch(apiURL).then(function(response) {
+        if (response.ok) {
+            response.json().then(function (data) {
+                console.log(data);
+                indexValue = data.value;
+                console.log(indexValue);
+            });
+        } else {
+            indexValue = 'Error fetching the UV index: ' + response.statusText;
+        }
+    })
+    .catch(function(error) {
+        indexValue = 'Unable to connect to OpenWeather for UV data';
+    });
+    console.log(indexValue);
+    return indexValue;
+}
+
 var displayCurrentWeather = function(data, cityName) {
     // clear old content
     currentWeatherContainerEl.textContent = '';
@@ -47,10 +69,43 @@ var displayCurrentWeather = function(data, cityName) {
         return;
     }
 
-    // extract temperature, humidity, wind speed, and UV index from the data object
+    // extract & display temperature from the data object
     var temperatureEl = document.createElement('p');
-    temperatureEl.textContent = 'Temperature: ' + data.main.temp + '°F';
+    temperatureEl.textContent = 'Temperature: ' + data.main.temp + ' °F';
     currentWeatherContainerEl.appendChild(temperatureEl);
+
+    // extract & display humidity from the data object
+    var humidityEl = document.createElement('p');
+    humidityEl.textContent = 'Humidity: ' + data.main.humidity + '%';
+    currentWeatherContainerEl.appendChild(humidityEl);
+
+    // extract & display wind speed from the data object
+    var windSpeedEl = document.createElement('p');
+    windSpeedEl.textContent = 'Wind Speed: ' + data.wind.speed + ' MPH';
+    currentWeatherContainerEl.appendChild(windSpeedEl);
+
+    // extract latitude and longitude from the data object to fetch for UV index
+    var cityLat = data.coord.lat;
+    var cityLon = data.coord.lon;
+    var UVindex = getUVindex(cityLat, cityLon);
+    console.log('UVindex', UVindex);
+    // display UV index with different class depending on UV index value
+    var UVindexEl = document.createElement('p');
+    if (UVindex.split()[0] === 'E') {
+        UVindexEl.textContent = UVindex;
+    }
+    else if (parseFloat(UVindex) < 3) {
+        UVindexEl.innerHTML = `UV index: <span id="uv-fav">${UVindex}</span>`;
+    }
+    else if (parseFloat(UVindex) < 6) {
+        UVindexEl.innerHTML = `UV index: <span id="uv-mod">${UVindex}</span>`;
+    }
+    else {
+        UVindexEl.innerHTML = `UV index: <span id="uv-bad">${UVindex}</span>`;
+    }
+    currentWeatherContainerEl.appendChild(UVindexEl);
 }
+
+// Function to populate the search history and save to local storage
 
 getCurrentWeather('Los Angeles');
