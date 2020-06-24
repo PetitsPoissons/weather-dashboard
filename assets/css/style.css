@@ -1,0 +1,27 @@
+:root {
+    --light-blue: rgb(78, 123, 207);
+    --dark-blue: rgb(4, 4, 59);
+    --dark: #312c2b;
+    --red: rgb(224, 73, 73);
+    --orange: rgb(235, 171, 53);
+    --green: rgb(89, 168, 89);
+    --white: whitesmoke;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--white);
+    color: var(--dark);
+    line-height: 1.5;
+    font-size: 16px;
+}
+
+.hero {
+    background-color: var(--dark-blue);
+    color: var(--white);
+}
