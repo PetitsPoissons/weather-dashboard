@@ -4,7 +4,8 @@ var cityInputEl = document.querySelector('#city-name');
 var citiesListEl = document.querySelector('#cities-container ul');
 var citySearchedEl = document.querySelector('#city-searched');
 var currentWeatherContainerEl = document.querySelector('#current-weather-container');
-var cities = [];
+var clearBtn = document.querySelector('#clear-btn');
+var cities = JSON.parse(localStorage.getItem('citiesSearched')) || [];
 
 // utility function to check is an object is empty
 var isEmpty = function(obj) {
@@ -77,9 +78,10 @@ var displayCurrentWeather = function(data, cityName) {
 
     // display city name in search history if not already there
     if (!cities.includes(cityName)) {
-        cities.push(cityName);
-        cities.sort();
-        searchHistory();
+        cities.push(cityName);      // add new city name
+        cities.sort();              // sort alphabetically
+        localStorage.setItem('citiesSearched', JSON.stringify(cities)); // save updated array 
+        searchHistory();            // display updated search history
     }
 
     // check if api returned an empty weather data object
@@ -145,6 +147,8 @@ var displayUVindex = function(index) {
 var searchHistory = function() {
     // clear previous search history
     citiesListEl.innerHTML = '';
+
+    // loop through cities array to display search history
     cities.forEach(function (city){
         var cityEl = document.createElement('li');
         cityEl.setAttribute('class', 'list-item');
@@ -153,4 +157,21 @@ var searchHistory = function() {
     });
 };
 
+var cityClickHandler = event => {
+    var cityName = event.target.textContent;
+    getCurrentWeather(cityName);
+}
+
+var clearSearchHistory = () => {
+    cities = [];
+    localStorage.setItem('citiesSearched', JSON.stringify(cities));
+    searchHistory();
+}
+
+// event listeners
 userFormEl.addEventListener('submit', formSubmitHandler);
+citiesListEl.addEventListener('click', cityClickHandler);
+clearBtn.addEventListener('click', clearSearchHistory);
+
+// display search history stored in local storage upon opening the app
+searchHistory();
