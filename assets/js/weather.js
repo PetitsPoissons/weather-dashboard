@@ -4,7 +4,8 @@ var cityInputEl = document.querySelector('#city-name');
 var citiesListEl = document.querySelector('#cities-container ul');
 var citySearchedEl = document.querySelector('#city-searched');
 var currentWeatherContainerEl = document.querySelector('#current-weather-container');
-var cities = [];
+var cities = [];                         // array to store search history
+var today = moment().format('MM/DD/YY'); // today's date
 
 // utility function to check is an object is empty
 var isEmpty = function(obj) {
@@ -42,38 +43,28 @@ var formSubmitHandler = function(event) {
 };
 
 var getCurrentWeather = function(cityName) {
-    console.log('getCurrentWeather', cityName);
     // format the OpenWeather api url for current weather, one location
     var apiURL = `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&units=imperial&appid=${apiKey}`;
-    console.log('apiURL', apiURL);
-    // make a request to the url
+    // make request to the url
     fetch(apiURL)
-    .then(function(response) {
-        console.log('then response');
-        return response.json();
-    })
-    .then(function(data) {
-        console.log('then data', 'displayCurrentWeather() called');
+    .then(response => response.json())
+    .then(data => {
         displayCurrentWeather(data, cityName);
         return data.coord;
     })
-    .then(function(coord) {
-        console.log('then coord', 'getUVindex() called');
+    .then(coord => {
         getUVindex(coord.lat, coord.lon);
+        get5dayForecast(coord.lat, coord.lon);
     })
-    .catch(function(error) {
-        console.log('catch');
-        alert('Unable to find weather conditions for this city');
+    .catch(error => {
+        alert('Uh-ho, something went wrong... Please check for any misspelling. There could also be a problem with the connection, or there is no weather data available for this city.');
     });
 };
 
-var displayCurrentWeather = function(data, cityName) {
+var displayCurrentWeather = (data, cityName) => {
     // clear old content
     currentWeatherContainerEl.innerHTML = '';
     citySearchedEl.textContent = cityName;
-
-    // get today's date
-    var today = moment().format('MM/DD/YY');
 
     // display city name in search history if not already there
     if (!cities.includes(cityName)) {
@@ -108,24 +99,20 @@ var displayCurrentWeather = function(data, cityName) {
     currentWeatherContainerEl.appendChild(windSpeedEl);
 }
 
-var getUVindex = function(lat, lon) {
+var getUVindex = (lat, lon) => {
     // format the OpenWeather api url for current UV index, one location
     var apiURL = `http://api.openweathermap.org/data/2.5/uvi?appid=${apiKey}&lat=${lat}&lon=${lon}`;
     fetch(apiURL)
-    .then(function(response) {
-        return response.json();
-    })
-    .then(function (data) {
+    .then(response => response.json())
+    .then(data => {
         var index = parseFloat(data.value)
         displayUVindex(index);
     })
-    .catch(function(error) {
-        alert(`Error fetching the UV index: ${response.statusText}`);
-    });
+    .catch(error => alert('Error fetching the UV index'));
 }
 
 // Function to display UV index with different class depending on UV index value
-var displayUVindex = function(index) {
+var displayUVindex = index => {
     var indexId;
     if (index < 3) {
         indexId = 'uv-fav';
@@ -139,10 +126,40 @@ var displayUVindex = function(index) {
     var UVindexEl = document.createElement('p');
     UVindexEl.innerHTML = `UV index: <span id=${indexId}>${index}</span>`;
     currentWeatherContainerEl.appendChild(UVindexEl);
+};
+
+// Function to fetch 5-day forecast for a given city
+var get5dayForecast = (lat, lon) => {
+    // format the OpenWeather api url for 5-day forecast, one location
+    var apiURL = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`;
+    // make request to the url
+    fetch(apiURL)
+    .then(response => response.json())
+    .then(data => display5dayForecast(data))
+    .catch(error => alert('Error fetching the 5-day forecast for this city'));
+};
+
+// Function to display the 5-day forecast for a given city
+var display5dayForecast = data => {
+    console.log('display5dayForecast', data);
+    // set a date string for tomorrow's date at noon with format 'YYYY-MM-DD 12:00:00'
+    var tomorrowNoon = moment().add(1, 'd').format('YYYY-MM-DD') + ' 12:00:00';
+    var arrDays = data.list;
+    var startIndex;
+    // get the index for tomorrow noon in the arrays of days
+    arrDays.forEach( day => {
+        if (day.dt_txt === tomorrowNoon) {
+            startIndex = arrDays.indexOf(day);
+            return;
+        }
+    });
+    for (i=startIndex; i<arrDays.length; i+=8) {
+        
+    };
 }
 
 // Function to populate the search history and save to local storage
-var searchHistory = function() {
+var searchHistory = () => {
     // clear previous search history
     citiesListEl.innerHTML = '';
     cities.forEach(function (city){
