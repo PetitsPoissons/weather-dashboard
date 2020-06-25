@@ -26,10 +26,12 @@ function titleCase(str) {
     return splitStr.join(' '); 
  }
 
+ // function to handle submit button or enter input city
 var formSubmitHandler = function(event) {
     event.preventDefault();
     // get value from input element
     var city = titleCase(cityInputEl.value.trim());
+    console.log('formSubmitHandler', city);
 
     if (city) {
         getCurrentWeather(city);
@@ -40,29 +42,34 @@ var formSubmitHandler = function(event) {
 };
 
 var getCurrentWeather = function(cityName) {
+    console.log('getCurrentWeather', cityName);
     // format the OpenWeather api url for current weather, one location
     var apiURL = `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&units=imperial&appid=${apiKey}`;
-
+    console.log('apiURL', apiURL);
     // make a request to the url
     fetch(apiURL)
     .then(function(response) {
+        console.log('then response');
         return response.json();
     })
     .then(function(data) {
+        console.log('then data', 'displayCurrentWeather() called');
         displayCurrentWeather(data, cityName);
         return data.coord;
     })
     .then(function(coord) {
+        console.log('then coord', 'getUVindex() called');
         getUVindex(coord.lat, coord.lon);
     })
     .catch(function(error) {
+        console.log('catch');
         alert('Unable to find weather conditions for this city');
     });
 };
 
 var displayCurrentWeather = function(data, cityName) {
     // clear old content
-    currentWeatherContainerEl.textContent = '';
+    currentWeatherContainerEl.innerHTML = '';
     citySearchedEl.textContent = cityName;
 
     // get today's date
@@ -70,7 +77,9 @@ var displayCurrentWeather = function(data, cityName) {
 
     // display city name in search history if not already there
     if (!cities.includes(cityName)) {
-        searchHistory(cityName);
+        cities.push(cityName);
+        cities.sort();
+        searchHistory();
     }
 
     // check if api returned an empty weather data object
@@ -133,10 +142,13 @@ var displayUVindex = function(index) {
 }
 
 // Function to populate the search history and save to local storage
-var searchHistory = function(cityName) {
-    cities.push(cityName);
-    cities.sort().forEach(function (){
-        var cityEl = document.createElement('li').addClass('list-item');
+var searchHistory = function() {
+    // clear previous search history
+    citiesListEl.innerHTML = '';
+    cities.forEach(function (city){
+        var cityEl = document.createElement('li');
+        cityEl.setAttribute('class', 'list-item');
+        cityEl.textContent = city;
         citiesListEl.appendChild(cityEl);
     });
 };

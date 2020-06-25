@@ -16,19 +16,23 @@
         <div class="row justify-space-between">
         <!-- Search column -->
         <div class="col-12 col-md-3">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Search for a City:</h5>
-                    <form id="user-form">
-                        <div class="input-group mb-3">
-                            <input type="text" name="city-name" id="city-name" class="form-control" aria-describedby="button-addon2"/>
-                            <div class="input-group-append">
-                                <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Search</button>
+            <aside class="filters">
+                <div class="panel panel-default">
+                    <h5 class="panel-heading">Search for a City:</h5>
+                    <div class="panel-body">
+                        <form id="user-form">
+                            <div class="form-group mb-3">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="city-name">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-secondary" type="submit">Search</button>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
-            </div>
+            </aside>
             <div id="cities-container">
                 <ul class="list-group"></ul>
             </div>
