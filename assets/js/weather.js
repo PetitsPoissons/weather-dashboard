@@ -4,8 +4,9 @@ var cityInputEl = document.querySelector('#city-name');
 var citiesListEl = document.querySelector('#cities-container ul');
 var citySearchedEl = document.querySelector('#city-searched');
 var currentWeatherContainerEl = document.querySelector('#current-weather-container');
+var forecastContainerEl = document.querySelector('#forecast-container');
 var cities = [];                         // array to store search history
-var today = moment().format('MM/DD/YY'); // today's date
+var today = moment().format('M/DD/YY'); // today's date
 
 // utility function to check is an object is empty
 var isEmpty = function(obj) {
@@ -141,21 +142,62 @@ var get5dayForecast = (lat, lon) => {
 
 // Function to display the 5-day forecast for a given city
 var display5dayForecast = data => {
-    console.log('display5dayForecast', data);
-    // set a date string for tomorrow's date at noon with format 'YYYY-MM-DD 12:00:00'
-    var tomorrowNoon = moment().add(1, 'd').format('YYYY-MM-DD') + ' 12:00:00';
+
+    // prepare the forecast container
+    forecastContainerEl.innerHTML = '<h4 class="d-block">5-Day Forecast:</h4>';
+    var cardsContainerEl = document.createElement('div');
+    cardsContainerEl.setAttribute('class', 'row');
+
+    // set a date string for tomorrow's date at 9am with format 'YYYY-MM-DD 09:00:00'
+    var tomorrowNoon = moment().add(1, 'd').format('YYYY-MM-DD') + ' 09:00:00';
     var arrDays = data.list;
     var startIndex;
-    // get the index for tomorrow noon in the arrays of days
+    // get the index for tomorrow 9am in the arrays of days
     arrDays.forEach( day => {
         if (day.dt_txt === tomorrowNoon) {
             startIndex = arrDays.indexOf(day);
             return;
         }
     });
+
+    // loop through array of forecasts and create each of the five days forecast (the forecast at 9am is extracted)
     for (i=startIndex; i<arrDays.length; i+=8) {
-        
+        console.log(arrDays[i]);
+        var dayForecastContainerEl = document.createElement('div');
+        //dayForecastContainerEl.classList = 'col-12';
+        var cardEl = document.createElement('div');
+        cardEl.setAttribute('class', 'card');
+        var cardBodyEl = document.createElement('div');
+        cardBodyEl.setAttribute('class', 'card-body');
+
+        // extract & display forecast date
+        var date = moment(arrDays[i].dt_txt.split(' ')[0], 'YYYY-MM-DD').format('M/DD/YY');
+        var dateEl = document.createElement('h4');
+        dateEl.textContent = `${date}`;
+        cardBodyEl.appendChild(dateEl);
+
+        // extract & display forecast icon
+        var iconId = arrDays[i].weather[0].icon;
+        var iconEl = document.createElement('i');
+        iconEl.innerHTML = `<img src="http://openweathermap.org/img/wn/${iconId}.png"/>`;
+        cardBodyEl.appendChild(iconEl);
+
+        // extract & display forecasted temp
+        var tempEl = document.createElement('p');
+        tempEl.textContent = `Temp: ${arrDays[i].main.temp} °F`;
+        cardBodyEl.appendChild(tempEl);
+
+        // extract & display forecasted humidity
+        var humidityEl = document.createElement('p');
+        humidityEl.textContent = `Humidity: ${arrDays[i].main.humidity} %`;
+        cardBodyEl.appendChild(humidityEl);
+
+        cardEl.appendChild(cardBodyEl);
+        dayForecastContainerEl.appendChild(cardEl);
+        cardsContainerEl.appendChild(dayForecastContainerEl);
     };
+
+    forecastContainerEl.appendChild(cardsContainerEl);
 }
 
 // Function to populate the search history and save to local storage

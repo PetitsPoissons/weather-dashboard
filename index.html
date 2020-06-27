@@ -14,38 +14,41 @@
     </header> 
     <main class="container">
         <div class="row justify-space-between">
-        <!-- Search column -->
-        <div class="col-12 col-md-3">
-            <aside class="filters">
-                <div class="panel panel-default">
-                    <h5 class="panel-heading">Search for a City:</h5>
-                    <div class="panel-body">
-                        <form id="user-form">
-                            <div class="form-group mb-3">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="city-name">
-                                    <div class="input-group-append">
-                                        <button class="btn btn-outline-secondary" type="submit">Search</button>
+            <!-- Search column -->
+            <div class="col-12 col-md-3">
+                <aside class="filters">
+                    <div class="panel panel-default">
+                        <h5 class="panel-heading">Search for a City:</h5>
+                        <div class="panel-body">
+                            <form id="user-form">
+                                <div class="form-group mb-3">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="city-name">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary" type="submit">Search</button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </form>
+                            </form>
+                        </div>
+                        <div id="cities-container">
+                            <ul class="list-group"></ul>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+            <!-- Results column -->
+            <div class="col-12 col-md-9">
+                <div class="row d-block">
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="card-title" id="city-searched"></h3>
+                            <div id="current-weather-container"></div>
+                        </div>
                     </div>
                 </div>
-            </aside>
-            <div id="cities-container">
-                <ul class="list-group"></ul>
+                <div class="row d-block" id="forecast-container"></div>
             </div>
-        </div>
-        <!-- Results column -->
-        <div class="col-12 col-md-9">
-            <div class="card">
-                <div class="card-body">
-                    <h3 class="card-title" id="city-searched"></h3>
-                    <div id="current-weather-container"></div>
-                </div>
-            </div>
-        </div>
         </div>
     </main>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
