@@ -4,14 +4,8 @@ var cityInputEl = document.querySelector('#city-name');
 var citiesListEl = document.querySelector('#cities-container ul');
 var citySearchedEl = document.querySelector('#city-searched');
 var currentWeatherContainerEl = document.querySelector('#current-weather-container');
-<<<<<<< HEAD
-var forecastContainerEl = document.querySelector('#forecast-container');
-var cities = [];                         // array to store search history
-var today = moment().format('M/DD/YY'); // today's date
-=======
 var clearBtn = document.querySelector('#clear-btn');
 var cities = JSON.parse(localStorage.getItem('citiesSearched')) || [];
->>>>>>> feature/search-history
 
 // utility function to check is an object is empty
 var isEmpty = function(obj) {
