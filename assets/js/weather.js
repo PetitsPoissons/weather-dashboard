@@ -120,18 +120,18 @@ var getUVindex = (lat, lon) => {
 
 // Function to display UV index with different class depending on UV index value
 var displayUVindex = index => {
-    var indexId;
+    var indexClass;
     if (index < 3) {
-        indexId = 'uv-fav';
+        indexClass = 'bg-success';
     }
     else if (index < 6) {
-        indexId = 'uv-mod';
+        indexClass = 'bg-warning';
     }
     else {
-        indexId = 'uv-bad';
+        indexClass = 'bg-danger';
     }
     var UVindexEl = document.createElement('p');
-    UVindexEl.innerHTML = `UV index: <span id=${indexId}>${index}</span>`;
+    UVindexEl.innerHTML = `UV index: <span class="${indexClass} p-2 text-white rounded">${index}</span>`;
     currentWeatherContainerEl.appendChild(UVindexEl);
 };
 
@@ -152,7 +152,7 @@ var get5dayForecast = (lat, lon) => {
 var display5dayForecast = data => {
 
     // prepare the forecast container
-    forecastContainerEl.innerHTML = '<h4 class="d-block">5-Day Forecast:</h4>';
+    forecastContainerEl.innerHTML = '<h4 class="d-block pt-4 pb-2">5-Day Forecast:</h4>';
     var cardsContainerEl = document.createElement('div');
     cardsContainerEl.setAttribute('class', 'row');
 
@@ -173,15 +173,17 @@ var display5dayForecast = data => {
     for (i=startIndex; i<arrDays.length; i+=8) {
         console.log(arrDays[i]);
         var dayForecastContainerEl = document.createElement('div');
+        dayForecastContainerEl.setAttribute('class', 'mx-auto');
         //dayForecastContainerEl.classList = 'col-12';
         var cardEl = document.createElement('div');
-        cardEl.setAttribute('class', 'card');
+        cardEl.setAttribute('class', 'card bg-primary text-white');
         var cardBodyEl = document.createElement('div');
         cardBodyEl.setAttribute('class', 'card-body');
 
         // extract & display forecast date
         var date = moment(arrDays[i].dt_txt.split(' ')[0], 'YYYY-MM-DD').format('M/DD/YY');
-        var dateEl = document.createElement('h4');
+        var dateEl = document.createElement('h5');
+        dateEl.setAttribute('class', 'card-title');
         dateEl.textContent = `${date}`;
         cardBodyEl.appendChild(dateEl);
 
@@ -194,11 +196,13 @@ var display5dayForecast = data => {
 
         // extract & display forecasted temp
         var tempEl = document.createElement('p');
+        tempEl.setAttribute('class', 'card-text');
         tempEl.textContent = `Temp: ${arrDays[i].main.temp} °F`;
         cardBodyEl.appendChild(tempEl);
 
         // extract & display forecasted humidity
         var humidityEl = document.createElement('p');
+        humidityEl.setAttribute('class', 'card-text');
         humidityEl.textContent = `Humidity: ${arrDays[i].main.humidity} %`;
         cardBodyEl.appendChild(humidityEl);
 
@@ -218,7 +222,7 @@ var searchHistory = () => {
     // loop through cities array to display search history
     cities.forEach(function (city){
         var cityEl = document.createElement('li');
-        cityEl.setAttribute('class', 'list-item');
+        cityEl.setAttribute('class', 'list-group-item');
         cityEl.textContent = city;
         citiesListEl.appendChild(cityEl);
     });
