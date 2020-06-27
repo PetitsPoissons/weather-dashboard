@@ -4,8 +4,12 @@ var cityInputEl = document.querySelector('#city-name');
 var citiesListEl = document.querySelector('#cities-container ul');
 var citySearchedEl = document.querySelector('#city-searched');
 var currentWeatherContainerEl = document.querySelector('#current-weather-container');
+var forecastContainerEl = document.querySelector('#forecast-container');
 var clearBtn = document.querySelector('#clear-btn');
+// retrieve ssearch history
 var cities = JSON.parse(localStorage.getItem('citiesSearched')) || [];
+// get today's date
+var today = moment().format('M/DD/YY');
 
 // utility function to check is an object is empty
 var isEmpty = function(obj) {
@@ -32,7 +36,6 @@ var formSubmitHandler = function(event) {
     event.preventDefault();
     // get value from input element
     var city = titleCase(cityInputEl.value.trim());
-    console.log('formSubmitHandler', city);
 
     if (city) {
         getCurrentWeather(city);
@@ -54,9 +57,11 @@ var getCurrentWeather = function(cityName) {
     })
     .then(coord => {
         getUVindex(coord.lat, coord.lon);
+        console.log('then coord', 'get5dayForecast() called');
         get5dayForecast(coord.lat, coord.lon);
     })
     .catch(error => {
+        console.log('catch');
         alert('Uh-ho, something went wrong... Please check for any misspelling. There could also be a problem with the connection, or there is no weather data available for this city.');
     });
 };
@@ -82,6 +87,7 @@ var displayCurrentWeather = (data, cityName) => {
 
     // extract weather icon & display title including city, today's date and weather icon
     var iconId = data.weather[0].icon;
+    console.log('iconId:', iconId);
     citySearchedEl.innerHTML = `${cityName} (${today}) <span id="weather-icon"><img src="http://openweathermap.org/img/wn/${iconId}@2x.png"/></span>`;
 
     // extract & display temperature from the data object
@@ -131,8 +137,10 @@ var displayUVindex = index => {
 
 // Function to fetch 5-day forecast for a given city
 var get5dayForecast = (lat, lon) => {
+    console.log(lat, lon);
     // format the OpenWeather api url for 5-day forecast, one location
     var apiURL = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`;
+    console.log('apiURL', apiURL);
     // make request to the url
     fetch(apiURL)
     .then(response => response.json())
@@ -159,6 +167,7 @@ var display5dayForecast = data => {
             return;
         }
     });
+    console.log('startIndex:', startIndex);
 
     // loop through array of forecasts and create each of the five days forecast (the forecast at 9am is extracted)
     for (i=startIndex; i<arrDays.length; i+=8) {
@@ -178,6 +187,7 @@ var display5dayForecast = data => {
 
         // extract & display forecast icon
         var iconId = arrDays[i].weather[0].icon;
+        console.log('forecastIconId:', iconId);
         var iconEl = document.createElement('i');
         iconEl.innerHTML = `<img src="http://openweathermap.org/img/wn/${iconId}.png"/>`;
         cardBodyEl.appendChild(iconEl);
