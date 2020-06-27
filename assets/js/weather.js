@@ -4,9 +4,14 @@ var cityInputEl = document.querySelector('#city-name');
 var citiesListEl = document.querySelector('#cities-container ul');
 var citySearchedEl = document.querySelector('#city-searched');
 var currentWeatherContainerEl = document.querySelector('#current-weather-container');
+<<<<<<< HEAD
 var forecastContainerEl = document.querySelector('#forecast-container');
 var cities = [];                         // array to store search history
 var today = moment().format('M/DD/YY'); // today's date
+=======
+var clearBtn = document.querySelector('#clear-btn');
+var cities = JSON.parse(localStorage.getItem('citiesSearched')) || [];
+>>>>>>> feature/search-history
 
 // utility function to check is an object is empty
 var isEmpty = function(obj) {
@@ -69,9 +74,10 @@ var displayCurrentWeather = (data, cityName) => {
 
     // display city name in search history if not already there
     if (!cities.includes(cityName)) {
-        cities.push(cityName);
-        cities.sort();
-        searchHistory();
+        cities.push(cityName);      // add new city name
+        cities.sort();              // sort alphabetically
+        localStorage.setItem('citiesSearched', JSON.stringify(cities)); // save updated array 
+        searchHistory();            // display updated search history
     }
 
     // check if api returned an empty weather data object
@@ -204,6 +210,8 @@ var display5dayForecast = data => {
 var searchHistory = () => {
     // clear previous search history
     citiesListEl.innerHTML = '';
+
+    // loop through cities array to display search history
     cities.forEach(function (city){
         var cityEl = document.createElement('li');
         cityEl.setAttribute('class', 'list-item');
@@ -212,4 +220,21 @@ var searchHistory = () => {
     });
 };
 
+var cityClickHandler = event => {
+    var cityName = event.target.textContent;
+    getCurrentWeather(cityName);
+}
+
+var clearSearchHistory = () => {
+    cities = [];
+    localStorage.setItem('citiesSearched', JSON.stringify(cities));
+    searchHistory();
+}
+
+// event listeners
 userFormEl.addEventListener('submit', formSubmitHandler);
+citiesListEl.addEventListener('click', cityClickHandler);
+clearBtn.addEventListener('click', clearSearchHistory);
+
+// display search history stored in local storage upon opening the app
+searchHistory();
