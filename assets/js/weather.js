@@ -169,8 +169,8 @@ var display5dayForecast = data => {
     // set a date string for first forecast date at noon with format 'YYYY-MM-DD 12:00:00'
     var firstForecast;
     var todayStartOfHour = moment(dtCitySearched, 'M/DD/YY, h:mm a').startOf('hour').format('YYYY-MM-DD HH:mm:ss');
-    var todayNineAM = moment(dtCitySearched, 'M/DD/YY, h:mm a').format('YYYY-MM-DD') + ' 09:00:00';
-    if (todayStartOfHour > todayNineAM) {   // check if current local time of city searched is after 9 am, then our first forecast will be next day at noon
+    var todaySixAM = moment(dtCitySearched, 'M/DD/YY, h:mm a').format('YYYY-MM-DD') + ' 06:00:00';
+    if (todayStartOfHour > todaySixAM) {   // check if current local time of city searched is after 9 am, then our first forecast will be next day at noon
         firstForecast = moment(dtCitySearched, 'M/DD/YY, h:mm a').add(1, 'd').format('YYYY-MM-DD') + ' 12:00:00';
     } else {                                // otherwise our first forecast will be same day at noon
         firstForecast = moment(dtCitySearched, 'M/DD/YY, h:mm a').format('YYYY-MM-DD') + ' 12:00:00';
@@ -178,6 +178,7 @@ var display5dayForecast = data => {
 
     // extract array of 40 forecasts (per API doc forecasts are every 3 hours, 5 days, hence 40 data points)
     var arrDays = data.list;
+    console.log(arrDays);
     var startIndex;
     // get the index for first forecast day we identified we wanted
     arrDays.forEach( day => {
