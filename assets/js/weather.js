@@ -8,8 +8,6 @@ var forecastContainerEl = document.querySelector('#forecast-container');
 var clearBtn = document.querySelector('#clear-btn');
 // retrieve ssearch history
 var cities = JSON.parse(localStorage.getItem('citiesSearched')) || [];
-// get today's date
-var today = moment().format('M/DD/YY');
 
 // utility function to check is an object is empty
 var isEmpty = function(obj) {
@@ -57,11 +55,9 @@ var getCurrentWeather = function(cityName) {
     })
     .then(coord => {
         getUVindex(coord.lat, coord.lon);
-        console.log('then coord', 'get5dayForecast() called');
         get5dayForecast(coord.lat, coord.lon);
     })
     .catch(error => {
-        console.log('catch');
         alert('Uh-ho, something went wrong... Please check for any misspelling. There could also be a problem with the connection, or there is no weather data available for this city.');
     });
 };
@@ -85,10 +81,13 @@ var displayCurrentWeather = (data, cityName) => {
         return;
     }
 
+    // calculate the searched city local day and time
+    var dtCitySearched = moment.unix(data.dt + data.timezone).utc().format('M/DD/YY, h:mm a');
+
     // extract weather icon & display title including city, today's date and weather icon
     var iconId = data.weather[0].icon;
-    console.log('iconId:', iconId);
-    citySearchedEl.innerHTML = `${cityName} (${today}) <span id="weather-icon"><img src="http://openweathermap.org/img/wn/${iconId}@2x.png"/></span>`;
+    console.log('current weather icon:', iconId);
+    citySearchedEl.innerHTML = `${cityName} (${dtCitySearched}) <span id="weather-icon"><img src="http://openweathermap.org/img/wn/${iconId}@2x.png"/></span>`;
 
     // extract & display temperature from the data object
     var temperatureEl = document.createElement('p');
@@ -137,10 +136,8 @@ var displayUVindex = index => {
 
 // Function to fetch 5-day forecast for a given city
 var get5dayForecast = (lat, lon) => {
-    console.log(lat, lon);
     // format the OpenWeather api url for 5-day forecast, one location
     var apiURL = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`;
-    console.log('apiURL', apiURL);
     // make request to the url
     fetch(apiURL)
     .then(response => response.json())
@@ -150,14 +147,15 @@ var get5dayForecast = (lat, lon) => {
 
 // Function to display the 5-day forecast for a given city
 var display5dayForecast = data => {
-
+    console.log(data);
     // prepare the forecast container
-    forecastContainerEl.innerHTML = '<h4 class="d-block pt-4 pb-2">5-Day Forecast:</h4>';
+    forecastContainerEl.innerHTML = '<h4 class="d-block pt-4 pb-2">5-Day Forecast <span id="time-forecast">[expected weather conditions at noon each day]</span></h4>';
     var cardsContainerEl = document.createElement('div');
     cardsContainerEl.setAttribute('class', 'row');
 
-    // set a date string for tomorrow's date at 9am with format 'YYYY-MM-DD 09:00:00'
-    var tomorrowNoon = moment().add(1, 'd').format('YYYY-MM-DD') + ' 09:00:00';
+    // set a date string for tomorrow's date at noon with format 'YYYY-MM-DD 12:00:00'
+    var tomorrowNoon = moment().add(1, 'd').format('YYYY-MM-DD') + ' 12:00:00';
+    console.log('tomorrowNoon:', tomorrowNoon);
     var arrDays = data.list;
     var startIndex;
     // get the index for tomorrow 9am in the arrays of days
@@ -190,6 +188,10 @@ var display5dayForecast = data => {
         // extract & display forecast icon
         var iconId = arrDays[i].weather[0].icon;
         console.log('forecastIconId:', iconId);
+        if (iconId[iconId.length-1] === 'n') {
+            iconId = iconId.slice(0, -1) + 'd';
+            console.log(iconId);
+        }
         var iconEl = document.createElement('i');
         iconEl.innerHTML = `<img src="http://openweathermap.org/img/wn/${iconId}.png"/>`;
         cardBodyEl.appendChild(iconEl);
