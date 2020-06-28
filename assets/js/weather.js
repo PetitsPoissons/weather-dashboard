@@ -6,8 +6,10 @@ var citySearchedEl = document.querySelector('#city-searched');
 var currentWeatherContainerEl = document.querySelector('#current-weather-container');
 var forecastContainerEl = document.querySelector('#forecast-container');
 var clearBtn = document.querySelector('#clear-btn');
-// retrieve ssearch history
+// retrieve search history
 var cities = JSON.parse(localStorage.getItem('citiesSearched')) || [];
+// variable for local day and time of city searched
+var dtCitySearched;
 
 // utility function to check is an object is empty
 var isEmpty = function(obj) {
@@ -82,7 +84,7 @@ var displayCurrentWeather = (data, cityName) => {
     }
 
     // calculate the searched city local day and time
-    var dtCitySearched = moment.unix(data.dt + data.timezone).utc().format('M/DD/YY, h:mm a');
+    dtCitySearched = moment.unix(data.dt + data.timezone).utc().format('M/DD/YY, h:mm a');
 
     // extract weather icon & display title including city, today's date and weather icon
     var iconId = data.weather[0].icon;
@@ -153,14 +155,24 @@ var display5dayForecast = data => {
     var cardsContainerEl = document.createElement('div');
     cardsContainerEl.setAttribute('class', 'row');
 
-    // set a date string for tomorrow's date at noon with format 'YYYY-MM-DD 12:00:00'
-    var tomorrowNoon = moment().add(1, 'd').format('YYYY-MM-DD') + ' 12:00:00';
-    console.log('tomorrowNoon:', tomorrowNoon);
+    // set a date string for first forecast date at noon with format 'YYYY-MM-DD 12:00:00'
+    console.log('dtCitySearched: ', dtCitySearched);
+    var firstForecast;
+    var todayStartOfHour = moment(dtCitySearched, 'M/DD/YY, h:mm a').startOf('hour').format('YYYY-MM-DD HH:mm:ss');
+    console.log('todayStartOfHour:', todayStartOfHour);
+    var todayNineAM = moment(dtCitySearched, 'M/DD/YY, h:mm a').format('YYYY-MM-DD') + ' 09:00:00';
+    console.log('todayNineAM:', todayNineAM);
+    if (todayStartOfHour > todayNineAM) {   // check if current time if more than 9 am, then our first forecast will be next day at noon
+        firstForecast = moment(dtCitySearched, 'M/DD/YY, h:mm a').add(1, 'd').format('YYYY-MM-DD') + ' 12:00:00';
+    } else {                                // otherwise our first forecast will be same day at noon
+        firstForecast = moment(dtCitySearched, 'M/DD/YY, h:mm a').format('YYYY-MM-DD') + ' 12:00:00';
+    }
+    console.log('firstForecast:', firstForecast);
     var arrDays = data.list;
     var startIndex;
-    // get the index for tomorrow 9am in the arrays of days
+    // get the index for first forecast day in the arrays of d
     arrDays.forEach( day => {
-        if (day.dt_txt === tomorrowNoon) {
+        if (day.dt_txt === firstForecast) {
             startIndex = arrDays.indexOf(day);
             return;
         }
