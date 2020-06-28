@@ -61,6 +61,19 @@ var getCurrentWeather = function(cityName) {
     })
     .catch(error => {
         alert('Uh-ho, something went wrong... Please check for any misspelling. There could also be a problem with the connection, or there is no weather data available for this city.');
+        forecastContainerEl.innerHTML = '';
+        console.log('alert cities before:', cities);
+        if (cities.includes(cityName)) {
+            var index = cities.indexOf(cityName);
+            if (index > -1) {
+                cities.splice(index, 1);
+            }
+            //cities.sort();              // sort alphabetically
+            localStorage.setItem('citiesSearched', JSON.stringify(cities)); // save updated array 
+            searchHistory();            // display updated search history
+        }
+        console.log('alert cities after:', cities);
+
     });
 };
 
