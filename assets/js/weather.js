@@ -122,7 +122,7 @@ var displayCurrentWeather = (data, cityName) => {
 
 var getUVindex = (lat, lon) => {
     // format the OpenWeather api url for current UV index, one location
-    var apiURL = `http://api.openweathermap.org/data/2.5/uvi?appid=${apiKey}&lat=${lat}&lon=${lon}`;
+    var apiURL = `https://api.openweathermap.org/data/2.5/uvi?appid=${apiKey}&lat=${lat}&lon=${lon}`;
     fetch(apiURL)
     .then(response => response.json())
     .then(data => {
